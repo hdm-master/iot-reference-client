@@ -1,0 +1,23 @@
+{
+  "name": "iot-reference-client",
+  "version": "1.0.0",
+  "description": "iot referance client",
+  "main": "handler",
+  "scripts": {
+    "test": "python -m unittest discover"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.prinect-lounge.com/iot/iot-provisioning-service.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serverless": "^1.50.0"
+  },
+  "devDependencies": {
+    "serverless-prune-plugin": "^1.4.0",
+    "serverless-python-requirements": "^5.0.0",
+    "standard": "^13.1.0"
+  }
+}

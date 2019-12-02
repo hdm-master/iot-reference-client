@@ -1,0 +1,16 @@
+service: iot-reference-client
+
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: ${self:custom.stage}
+  region: eu-west-1
+  environment:
+    stage: ${self:custom.stage}
+    aws_region: eu-west-1
+
+
+functions:
+  provisioningSevice:
+    handler: src/iot-referance-client/iot-referance-client.handler

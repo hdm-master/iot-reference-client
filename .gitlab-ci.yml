@@ -1,0 +1,85 @@
+default:
+    image: python:3.7
+
+stages:
+    - test    # execute unit tests
+    - deploy_dev
+    - deploy_stg
+
+.tagged_job:
+    tags:
+        - DOCKER
+        - AWS
+        - LINUX
+
+.prepare_runtime:
+    extends: .tagged_job
+    before_script:
+        - apt-get update
+        - apt-get install -y nodejs
+        - apt-get install -y npm
+        - npm install
+        - pip install pipenv
+
+.dev_job_python:
+    extends: .tagged_job
+    except:
+        - development
+        - master
+    before_script:
+        - export PATH=$PATH:/root/.local/bin
+        - export AWS_ACCESS_KEY_ID="$AWS_IOT_ACCESS_KEY"
+        - export AWS_SECRET_ACCESS_KEY="$AWS_IOT_SECRET_KEY"
+        - export AWS_REGION="eu-west-1"
+        - apt-get update
+        - apt-get install -y nodejs
+        - apt-get install -y npm
+        - npm install
+        - pip install pipenv
+        - export stage=dev
+        - pipenv install --ignore-pipfile
+
+.stg_job_python:
+    extends: .tagged_job
+    only:
+        - development
+    before_script:
+        - export PATH=$PATH:/root/.local/bin
+        - export AWS_ACCESS_KEY_ID="$AWS_IOT_ACCESS_KEY"
+        - export AWS_SECRET_ACCESS_KEY="$AWS_IOT_SECRET_KEY"
+        - export AWS_REGION="eu-west-1"
+        - apt-get update
+        - apt-get install -y nodejs
+        - apt-get install -y npm
+        - npm install
+        - pip install pipenv
+        - export stage=stg
+        - pipenv install --ignore-pipfile
+
+linting:
+    extends: .prepare_runtime
+    stage: test
+    script:
+      - pipenv install --dev
+      - pipenv run flake8 src # only check src directory
+
+unittesting:
+    extends: .prepare_runtime
+    stage: test
+    script:
+      - pipenv install
+      - pipenv run python -m unittest discover -s src
+
+deploy_dev:
+    extends: .dev_job_python
+    stage: deploy_dev
+    script:
+        - bash deploy.sh
+
+deploy_stg:
+    extends: .stg_job_python
+    stage: deploy_stg
+    script:
+        - bash deploy.sh
+
+
