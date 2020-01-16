@@ -35,7 +35,7 @@ as a virtual environment and dependency management tool.
 Make sure to set environment variables before you start the demo.
 You will have a env.* file for each environment (dev, stg and prd)
 
-Mac / user: 
+Mac / Linux user: 
 
     cd {PROJECT_ROOT} 
     pipenv shell
