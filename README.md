@@ -37,7 +37,10 @@ You will have a env.* file for each environment (dev, stg and prd)
     
     cd {PROJECT_ROOT} 
     pipenv shell
-    source ./env.{prefered_environment}  
+    source ./env.{prefered_environment*}  
+
+*We recommend you to run the reference client against our stage (env.stg) environment 
+since the development environment is under heavy development
 
 #### Verify the changes
 Open the debug monitoring tool: \
@@ -217,7 +220,7 @@ The devices sens state updates as reported states:
 
 
 ## Licenses
-Show [Licenses](licenses.txt) or generate them ``pip-licenses``
+Show [Licenses](licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
 
 ##Changelog
 #####15/01/2020

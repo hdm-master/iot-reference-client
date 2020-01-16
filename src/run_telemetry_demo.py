@@ -1,6 +1,6 @@
-""" Demo script of the reference demo_client implementation
+""" Demo script of the reference demo_client telemetry implementation
 
-Run this script to simulate some messages between two devices
+Run this script to simulate the telemetry use case
 
 """
 
@@ -17,9 +17,9 @@ def simulate_telemetry():
     device = Device()
     device.connect()
     device.start_publishing()
-    sleep(1)
+    sleep(2)
     device.disconnect()
-    sleep(1)
+    sleep(2)
 
 
 if __name__ == '__main__':
