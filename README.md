@@ -34,10 +34,22 @@ as a virtual environment and dependency management tool.
     
 Make sure to set environment variables before you start the demo.
 You will have a env.* file for each environment (dev, stg and prd)
-    
+
+Mac / user: 
+
     cd {PROJECT_ROOT} 
     pipenv shell
     source ./env.{prefered_environment*}  
+    
+Windows user: 
+
+    cd {PROJECT_ROOT} 
+    pipenv shell
+    
+Unfortunately, we don't support automatic setting environment variables in windows yet.
+Please copy the variable out of the preferred stage file* and add the variable by using 
+``set variable=value``
+        
 
 *We recommend you to run the reference client against our stage (env.stg) environment 
 since the development environment is under heavy development
@@ -45,7 +57,7 @@ since the development environment is under heavy development
 #### Verify the changes
 Open the debug monitoring tool: \
     [Development](http://monitor.iot.dev.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
-    [Stage](http://monitor.stg.dev.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
+    [Stage](http://monitor.iot.stage.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
     [Production](https://monitor.iot.connectprint.cloud) 
 
 #### Telemetry demo
