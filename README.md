@@ -45,7 +45,7 @@ since the development environment is under heavy development
 #### Verify the changes
 Open the debug monitoring tool: \
     [Development](http://monitor.iot.dev.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
-    [Stage](http://monitor.stg.dev.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
+    [Stage](http://monitor.iot.stage.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com/) \
     [Production](https://monitor.iot.connectprint.cloud) 
 
 #### Telemetry demo
