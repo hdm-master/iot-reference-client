@@ -8,31 +8,27 @@ from .log import get_logger
 
 logger = get_logger(__name__)
 
-stage = os.getenv('stage')
-base_url = os.getenv(f'provisioning_url_{stage}')
-api_key = os.getenv('api_key')
-config_url_path = 'configuration'
-path_sender_id = 'sender1'
-q_senderSoftwareVersion = ' '
-q_senderType = ' '
-base_path = f'{os.getcwd()}'
-certificate_store_path = f'{base_path}/certificate_store'
-amazon_root_ca_path = f'{certificate_store_path}/amazonRootCA1.pem'
-device_private_key_path = f'{certificate_store_path}/devicePrivateKey.pem'
-device_public_key_path = f'{certificate_store_path}/devicePublicKey.pem'
-device_cert_path = f'{certificate_store_path}/deviceCert.cert'
-client_id_file_path = f'{certificate_store_path}/ClientID.txt'
-
-headers = {'Accept': 'application/json', 'x-api-key': api_key}
-config_url = f'{base_url}/{config_url_path}/{path_sender_id}?senderSoftwareVersion=' \
-             f'{q_senderSoftwareVersion}&senderType={q_senderType}'
-
-body = json.dumps({
-    'senderId': 123
-})
-
 
 def connection_helper_factory(options=None):
+
+    base_url = os.getenv('base_url')
+    api_key = os.getenv('api_key')
+    api_version = os.getenv('api_version')
+    config_url_path = 'configuration'
+    q_senderSoftwareVersion = ' '
+    q_senderType = ' '
+    base_path = f'{os.getcwd()}'
+    certificate_store_path = f'{base_path}/certificate_store'
+    amazon_root_ca_path = f'{certificate_store_path}/amazonRootCA1.pem'
+    device_private_key_path = f'{certificate_store_path}/devicePrivateKey.pem'
+    device_public_key_path = f'{certificate_store_path}/devicePublicKey.pem'
+    device_cert_path = f'{certificate_store_path}/deviceCert.cert'
+    client_id_file_path = f'{certificate_store_path}/ClientID.txt'
+
+    headers = {'Accept': 'application/json', 'x-api-key': api_key}
+    config_url = f'{base_url}/{api_version}/{config_url_path}?senderSoftwareVersion=' \
+                 f'{q_senderSoftwareVersion}&senderType={q_senderType}'
+
     if not options:
         options = {
             'certificate_store_path': certificate_store_path,
@@ -43,7 +39,7 @@ def connection_helper_factory(options=None):
             'client_id_file_path': client_id_file_path,
             'headers': headers,
             'config_url': config_url,
-            'body': body,
+            'body': None,
         }
     return ConnectionHelper(options)
 

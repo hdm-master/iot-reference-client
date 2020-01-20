@@ -1,21 +1,19 @@
 import unittest
 import os
-import json
 import shutil
 from pathlib import Path
-from .connectionHelper import connection_helper_factory, ConnectionHelper
+from util.connectionHelper import connection_helper_factory, ConnectionHelper
 
 
 class ModuleIntegrationTestCases(unittest.TestCase):
-    def test_create_new_prov_assets(self):
+    def test_create_new_prov_assets_v2(self):
+        api_version = 'v2'
         api_key_dev = 'bHq39E2eWO4WF8Y4kg3SC4shyERB3SAn2tyjZz4u'
         headers = {'Accept': 'application/json', 'x-api-key': api_key_dev}
         cert_store = f'{os.getcwd()}/unit_test/certificate_store'
-        prov_base_url_dev = 'https://cfg.iot.dev.connectprint.cloud/v1'
-        config_url = f'{prov_base_url_dev}/configuration/sender1?senderSoftwareVersion= &senderType= '
-        body = json.dumps({
-            'senderId': 123
-        })
+        prov_base_url_dev = 'https://cfg.iot.dev.connectprint.cloud'
+        config_url = f'{prov_base_url_dev}/{api_version}/configuration/?senderSoftwareVersion= &senderType= '
+
         options = {
             'certificate_store_path': cert_store,
             'amazon_root_ca_path': f'{cert_store}/amazonRootCA1.pem',
@@ -25,7 +23,7 @@ class ModuleIntegrationTestCases(unittest.TestCase):
             'client_id_file_path': f'{cert_store}/ClientID.txt',
             'headers': headers,
             'config_url': config_url,
-            'body': body,
+            'body': None,
         }
 
         helper = connection_helper_factory(options)
@@ -36,14 +34,13 @@ class ModuleIntegrationTestCases(unittest.TestCase):
         self.assertEqual(res['alreadyConnected'], False)
 
     def test_reuse_existing_assets(self):
+        api_version = 'v2'
         api_key_dev = 'bHq39E2eWO4WF8Y4kg3SC4shyERB3SAn2tyjZz4u'
         headers = {'Accept': 'application/json', 'x-api-key': api_key_dev}
         cert_store = f'{os.getcwd()}/unit_test/certificate_store'
-        prov_base_url_dev = 'https://cfg.iot.dev.connectprint.cloud/v1'
-        config_url = f'{prov_base_url_dev}/configuration/sender1?senderSoftwareVersion= &senderType= '
-        body = json.dumps({
-            'senderId': 123
-        })
+        prov_base_url_dev = 'https://cfg.iot.dev.connectprint.cloud'
+        config_url = f'{prov_base_url_dev}/{api_version}/configuration/?senderSoftwareVersion= &senderType= '
+
         options = {
             'certificate_store_path': cert_store,
             'amazon_root_ca_path': f'{cert_store}/amazonRootCA1.pem',
@@ -53,7 +50,7 @@ class ModuleIntegrationTestCases(unittest.TestCase):
             'client_id_file_path': f'{cert_store}/ClientID.txt',
             'headers': headers,
             'config_url': config_url,
-            'body': body,
+            'body': None,
         }
 
         helper = connection_helper_factory(options)
@@ -96,5 +93,5 @@ class ConnectionHelperTest(unittest.TestCase):
         self.assertEqual(res, False)
 
 
-if __name__ == '__main_ _':
+if __name__ == '__main__':
     unittest.main()
