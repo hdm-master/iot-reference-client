@@ -34,23 +34,25 @@ as a virtual environment and dependency management tool.
     
 Make sure to set environment variables before you start the demo.
 You will have a env.* file for each environment (dev, stg and prd)
+We will use our virtual environment (pipenv) to set the environment variables.
+
 
 Mac / Linux user: 
 
     cd {PROJECT_ROOT} 
-    pipenv shell
-    source ./env.{prefered_environment*}  
+    export PIPENV_DOTENV_LOCATION=./env.{prefered_environment*}  
     
 Windows user: 
 
     cd {PROJECT_ROOT} 
+    set PIPENV_DOTENV_LOCATION=.\env.{prefered_environment*}  
+
+
+Then start the virtual environment with
+
     pipenv shell
     
-Unfortunately, we don't support automatic setting environment variables in windows yet.
-Please copy the variable out of the preferred stage file* and add the variable by using 
-``set variable=value``
         
-
 *We recommend you to run the reference client against our stage (env.stg) environment 
 since the development environment is under heavy development
 
@@ -240,3 +242,7 @@ Initial repository setup:
 - Refactor legacy reference-client
 - use pipenv as management and dependency tool
 - Enhance legacy reference client with provisioning use case
+#####20/01/2020
+enable api version 2
+- Refactor reference client to api version 2
+- change provisioning of environment variables (os independent)
