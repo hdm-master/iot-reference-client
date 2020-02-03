@@ -7,7 +7,6 @@ Written by Jörg Sädtler
 """
 
 import json
-import os
 from time import sleep
 from util.connectionHelper import connection_helper_factory, IoTConnectionException
 from .iot_client import IoTClient
@@ -30,7 +29,8 @@ class Device:
 
     def __init__(self):
         self.state = {}
-        self.telemetry_topic = f"$aws/rules/iot_data_platform_telemetry_{os.getenv('stage')}"
+        self.telemetry_topic = None  # will be overwritten during provisioning
+        self.org_id = None  # will be overwritten during provisioning
         self.connection_details = {}
         self.thing_name = None  # will be overwritten during provisioning
         self.iot_client = None
@@ -42,6 +42,10 @@ class Device:
             con_helper = connection_helper_factory()
             response = con_helper.establish_connection()
             self.thing_name = response['clientId']
+            self.org_id = response['orgId']
+            telemetry_basic_ingest = response['provisioning']['telemetryTopic']
+            self.telemetry_topic = f'{telemetry_basic_ingest}/{self.org_id}/{self.thing_name}'
+            logger.info(self.telemetry_topic)
             self.connection_details.update({'clientId': response['clientId']})
             self.connection_details.update({'device_cert_path': response['device_cert_path']})
             self.connection_details.update({'device_private_key_path': response['device_private_key_path']})

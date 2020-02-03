@@ -12,11 +12,9 @@ logger = get_logger(__name__)
 def connection_helper_factory(options=None):
 
     base_url = os.getenv('base_url')
-    api_key = os.getenv('api_key')
+    auth_token = os.getenv('auth_token')
     api_version = os.getenv('api_version')
     config_url_path = 'configuration'
-    q_senderSoftwareVersion = ' '
-    q_senderType = ' '
     base_path = f'{os.getcwd()}'
     certificate_store_path = f'{base_path}/certificate_store'
     amazon_root_ca_path = f'{certificate_store_path}/amazonRootCA1.pem'
@@ -24,10 +22,10 @@ def connection_helper_factory(options=None):
     device_public_key_path = f'{certificate_store_path}/devicePublicKey.pem'
     device_cert_path = f'{certificate_store_path}/deviceCert.cert'
     client_id_file_path = f'{certificate_store_path}/ClientID.txt'
+    org_id_file_path = f'{certificate_store_path}/OrgID.txt'
 
-    headers = {'Accept': 'application/json', 'x-api-key': api_key}
-    config_url = f'{base_url}/{api_version}/{config_url_path}?senderSoftwareVersion=' \
-                 f'{q_senderSoftwareVersion}&senderType={q_senderType}'
+    headers_v3 = {'Accept': 'application/json', 'Authorization': f'Bearer {auth_token}'}
+    config_url_v3 = f'{base_url}/{api_version}/{config_url_path}'
 
     if not options:
         options = {
@@ -37,8 +35,9 @@ def connection_helper_factory(options=None):
             'device_public_key_path': device_public_key_path,
             'device_cert_path': device_cert_path,
             'client_id_file_path': client_id_file_path,
-            'headers': headers,
-            'config_url': config_url,
+            'org_id_file_path': org_id_file_path,
+            'headers': headers_v3,
+            'config_url': config_url_v3,
             'body': None,
         }
     return ConnectionHelper(options)
@@ -55,6 +54,7 @@ class ConnectionHelper:
     def __init__(self, options):
         self.body = options.get('body')
         self.client_id_file_path = options.get('client_id_file_path')
+        self.org_id_file_path = options.get('org_id_file_path')
         self.device_cert_path = options.get('device_cert_path')
         self.device_public_key_path = options.get('device_public_key_path')
         self.amazon_root_ca_path = options.get('amazon_root_ca_path')
@@ -71,7 +71,7 @@ class ConnectionHelper:
 
     # Already Connected get the clientID
     @staticmethod
-    def get_client_id(file):
+    def get_file_content(file):
         if str(path.exists('file')):
             with open(file) as readBuffer:
                 client_id = str(readBuffer.read())
@@ -118,6 +118,8 @@ class ConnectionHelper:
             self.write_data_file(self.device_cert_path, device_cert_data)
             client_id_data = content['clientId']
             self.write_data_file(self.client_id_file_path, client_id_data)
+            org_id_data = content['orgId']
+            self.write_data_file(self.org_id_file_path, org_id_data)
             logger.info('Provisioning API data connection successful, Certificate downloaded with new ClientID')
             return content
         else:
@@ -133,8 +135,10 @@ class ConnectionHelper:
             already_connected = self.check_certificate()
             if already_connected:
                 response.update({'alreadyConnected': True})
-                existing_client_id = ConnectionHelper.get_client_id(self.client_id_file_path)
+                existing_client_id = ConnectionHelper.get_file_content(self.client_id_file_path)
                 response.update({'clientId': existing_client_id})
+                existing_org_id = ConnectionHelper.get_file_content(self.org_id_file_path)
+                response.update({'orgId': existing_org_id})
                 logger.info('This device is already provisioned')
             else:
                 response.update({'alreadyConnected': False})
