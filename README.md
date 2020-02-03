@@ -30,6 +30,12 @@ as a virtual environment and dependency management tool.
     cd {PROJECT_ROOT} 
     pipenv install
 
+### Authentication
+Since v3 authentication is no longer handled by a api-key but with a bearer access token.
+The valid access token needs to assigned to the environment variable ``auth_token``. Please check the relevant
+env.* file. You can set the concrete value there. As a result the declaration should look like this : 
+``auth_token=aaaa.bbbb.cccc`` 
+
 ### Run the demo   
     
 Make sure to set environment variables before you start the demo.
@@ -237,12 +243,18 @@ The devices sens state updates as reported states:
 Show [Licenses](licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
 
 ##Changelog
-#####15/01/2020
+####15/01/2020
 Initial repository setup:
 - Refactor legacy reference-client
 - use pipenv as management and dependency tool
 - Enhance legacy reference client with provisioning use case
-#####20/01/2020
+####20/01/2020
 enable api version 2
 - Refactor reference client to api version 2
 - change provisioning of environment variables (os independent)
+####30/01/2020
+enable api version 3
+- Refactor reference client to api version 3
+- the certificate store has a new file called OrgId.txt where the orgId is stored
+- client sends telemetry data with additional sub topic information
+- Reprovisioning of your machine is necessary. Delete the certificate_store on your file system
