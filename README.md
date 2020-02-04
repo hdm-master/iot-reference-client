@@ -97,11 +97,12 @@ or client.
 
 The ```certificate_store``` folder should have these files:
 
-- amazonRootCA1.pem -> Sever certificate
-- clientID.txt -> text file with the client/thing ID
-- deviceCert.cert -> Device certificate
-- devicePrivateKey.pem -> Private Key of the device (Store this securely!)
-- devicePublicKey.pem -> Public Key of the device 
+- amazonRootCA1.pem -> Sever certificate (provided by the configuration service)
+- ClientID.txt -> text file with the client/thing ID (provided by the provisioning service)
+- OrgID.txt -> Your organisation ID (provided by the provisioning service)
+- deviceCert.cert -> Device certificate (provided by the provisioning service)
+- devicePrivateKey.pem -> Private Key of the device (created by the client itself)
+- devicePublicKey.pem -> Public Key of the device (created by the client itself)
 
 One thing / device can only have one connection to the IoT Core at the same time.
 
@@ -252,9 +253,10 @@ Initial repository setup:
 enable api version 2
 - Refactor reference client to api version 2
 - change provisioning of environment variables (os independent)
-####30/01/2020
+####03/02/2020
 enable api version 3
 - Refactor reference client to api version 3
+- client creates keys and csr to receive a device certificate from the provisioning service
 - the certificate store has a new file called OrgId.txt where the orgId is stored
 - client sends telemetry data with additional sub topic information
 - Reprovisioning of your machine is necessary. Delete the certificate_store on your file system
