@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 from pathlib import Path
-from util.connectionHelper import connection_helper_factory, ConnectionHelper
+from util.connectionHelper import connection_helper_factory, IoTConnectionHelper
 
 
 class ModuleIntegrationTestCases(unittest.TestCase):
@@ -83,10 +83,10 @@ class ConnectionHelperTest(unittest.TestCase):
             'config_url': "config_url_mock",
             'body': {"Mocked": "body"},
         }
-        self.con_helper = ConnectionHelper(options)
+        self.con_helper = IoTConnectionHelper(options)
 
     def test_instance(self):
-        self.assertIsInstance(self.con_helper, ConnectionHelper)
+        self.assertIsInstance(self.con_helper, IoTConnectionHelper)
 
     def test_check_certificate_negative(self):
         res = self.con_helper.check_certificate()

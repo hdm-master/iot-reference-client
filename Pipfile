@@ -10,6 +10,7 @@ pip-licenses = "*"
 [packages]
 paho-mqtt = "==1.4.0"
 requests = "*"
+cryptography = "*"
 
 [requires]
 python_version = "3.7"
