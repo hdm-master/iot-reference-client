@@ -1,0 +1,137 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://iot.connectprint.cloud/schemas/payload/generic.signal/Status/1/GenericSignalStatus.schema.json",
+    "title": "Generic signal / Status payload schama",
+    "description": "This signal is intended to publish a generic device status information. Should be fired to the IoT platform if any of the information covered has been changed. Derived from XJMF / Status message, see there for details. It is ussed for general puposes like status visualisation and KPI calculation. This information is public to any IoT data consumer.",
+    "type": "object",
+    "properties": {
+        "eventsubtype": {   "type": "string",
+                            "enum": ["Status"],
+                            "description": "Eventsubtype this payload is sent for."
+        },
+        "eventtype": {      "type": "string",
+                            "enum": ["generic.signal"],
+                            "description": "Type information referring the message payload. The eventType needs to be unique within the platform."
+        },
+        "payload": {    "type": "object",
+            "properties": {
+
+                "signalstatus": {   "type": "object",
+                    "properties": {
+                        "deviceinfo": { "type": "object",
+                            "properties": {
+                                "productioncounter": {      "type": "number",
+                                                            "description": "The current machine production counter. This counter can be reset manually. Typically, it starts counting at power-on time."
+                                },
+                                "speed": {                  "type": "number",
+                                                            "description": "Specifies the current machine speed."
+                                },
+                                "status": {                 "type": "string",
+                                                            "enum": ["Idle", "NonPoductive", "Offline", "Production", "Stopped"],
+                                                            "description": "Describes the overall status of the device"
+                                },
+                                "statusdetails": {          "type": "string",
+                                                            "description": "String that defines the device state more specifically acc. to the XJMF doc."
+                                },
+                                "totalproductioncounter": { "type": "number",
+                                                            "description": "The current total machine production counter since the machine was produced."
+                                },
+                                "event": {
+                                    "type": "object",
+                                    "description": "Additional information for common device related events (specific malfunction messages etc.)",
+                                    "properties": {
+                                        "eventid": {        "type": "string",
+                                                            "description": "Device specific internal event ID of the application that emits the event."
+                                        },
+                                        "eventvalue": {     "type": "string",
+                                                            "description": "Additional user defined value related to this event."
+                                        }
+                                    }
+                                },
+                                "jobphase": {
+                                    "description": "Each JobPhase SHALL describe the actual status of a job in the device. All jobs that are active on the device SHALL be specified.",
+                                    "type": "array",
+                                    "items": {              "type": "object",
+                                        "properties": {
+                                            "amount": {     "type": "number",
+                                                            "description": "Total actual amount of good production that the process defined in this JobPhase produced since @StartTime."
+                                            },
+                                            "costcenterid": {   "type": "string",
+                                                                "description": "The cost center that this JobPhase job is currently being charged to."
+
+                                            },
+                                            "jobid": {      "type": "string",
+                                                            "description": "JobID of the process that is executing."
+
+                                            },
+                                            "jobpartid": {  "type": "string",
+                                                            "description": "JobPartID of the process that is executing."
+                                            },
+                                            "part": {       "type": "array",
+                                                            "description": "SHALL define which parts are currently being processed.",
+                                                            "items": {  "type": "object",
+                                                                "properties": {
+                                                                    "side": {   "type": "string",
+                                                                                "description": ""
+                                                                    },
+                                                                    "sheetname": {  "type": "string",
+                                                                                    "description": ""
+                                                                    }
+                                                                }
+                                                            }
+                                            },
+                                            "percentcompleted": {   "type": "string",
+                                                                    "description": "Node processing progress in percent (%) completed."
+
+                                            },
+                                            "starttime": {  "type": "string",
+                                                            "description": "Time when execution of the node that is described by this JobPhase has been started."
+                                            },
+                                            "status": {     "type": "string",
+                                                            "enum": ["Aborted", "Cleanup", "Completed", "InProgress", "Setup", "Stopped", "Suspended", "Waiting"],
+                                                            "description": "SHALL specify the of the job in the device during this JobPhase."
+
+                                            },
+                                            "statusdetails": {  "type": "string",
+                                                                "description": "Machine readable description that defines the job state more specifically."
+                                            },
+                                            "waste": {          "type": "string",
+                                                                "description": "Total actual amount of waste that the process defined in this JobPhase produced since @starttime."
+                                            },
+                                            "workstepid": {     "type": "string",
+                                                                "description": "Additional job reference information, specifies the detailled workstep executed."
+                                            }
+                                        },
+                                        "required": [
+                                            "amount",
+                                            "jobid",
+                                            "status",
+                                            "statusdetails"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "speed",
+                                "status",
+                                "statusdetails",
+                                "totalproductioncounter"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "deviceinfo"
+                    ]
+                }
+            },
+            "required": [
+                "signalstatus"
+            ]
+        },
+        "payloadversion":{  "type": "integer",
+                            "enum": [2],
+                            "description": "This relates to this current payload schema definition."
+        }
+    },
+    "additionalProperties": true
+}
