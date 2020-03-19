@@ -1,0 +1,78 @@
+{
+    
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://iot.connectprint.cloud/schemas/payload/generic.signal/Status/1/GenericSignalStatus.schema.json",
+    "title": "Generic signal / Status payload schama",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "payload": {    "type": "object",
+            "properties": {
+                "signalstatus": {   "type": "object",
+                    "properties": {
+                        "deviceinfo": {     "type": "object",
+                            "properties": {
+                                "status": {             "type": "string",
+                                                        "enum": ["Idle", "Down", "Running"],
+                                                        "description": ""
+                                },
+                                "statusdetails": {      "type": "string",
+                                                        "enum": ["Good", "Waste"],
+                                                        "description": ""
+                                },
+                                "productioncounter": {  "type": "number",
+                                                        "description": ""
+                                },
+                                "speed": {              "type": "number",
+                                                        "description": ""
+                                },
+                                "totalproductioncounter": { "type": "number",
+                                                            "description": ""
+                                },
+                                "jobphase": {               "type": "object",
+                                                            "description": "",
+                                    "properties": {
+                                        "jobid": {          "type": "string",
+                                                            "description": ""
+                                        },
+                                        "workstepid": {     "type": "string",
+                                                            "description": ""
+                                        },
+                                        "status": {         "type": "string",
+                                                            "enum": ["Setup", "In Progress"],
+                                                            "description": ""
+                                        },
+                                        "statusdetails": {  "type": "string",
+                                                            "description": "(add some enumerations later here.)"
+                                        },
+                                        "amount": {         "type": "number",
+                                                            "description": ""
+                                        },
+                                        "percentcompleted": {   "type": "number",
+                                                                "description": ""
+                                        },
+                                        "waste": {          "type": "number",
+                                                            "description": ""
+                                        }
+                                    }
+                                },
+                                "event": {  "type": "object",
+                                    "properties": {
+                                        "eventvalue": {     "type": "string",
+                                                            "description": ""
+                                        },
+                                        "eventid": {        "type": "string",
+                                                            "description": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }                            
+        },
+        "additionalProperties": true
+    }
+}
+

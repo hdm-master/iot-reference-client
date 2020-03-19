@@ -1,17 +1,22 @@
-import json
-from time import sleep
-from util.log import get_logger
+"""The Device Shadow is currently not in use"""
 
-logger = get_logger(__name__)
+import json
+import logging
+from time import sleep
+
+logger = logging.getLogger(__name__)
 
 
 class ShadowCallbackHandler:
-    """Handles all state updates between the device and iot core
+    """
+    CURRENTLY, NOT USED
 
-    The handler keeps a reference to the iot demo_client and the device.
+    Handles all state updates between the device and iot core
+
+    The handler keeps a reference to the iot iot_assets and the device.
     Whenever a message is received on a relevant topic for the device,
     the devices state is updated. Each update to the state of the device
-    is published to the iot core via the iot demo_client
+    is published to the iot core via the iot iot_assets
     """
 
     def __init__(self, iot_client, device):

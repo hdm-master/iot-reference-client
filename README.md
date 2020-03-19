@@ -1,26 +1,16 @@
-# IoT Client Samples
+# Quick Start
+Prerequisites: 
+- Zaikio User account for the test or live directory
 
-This folder contains reference clients for the IoT Platform
-
-This is a python iot client based on the paho library. It's using
-certificates for client authentication and implements publishing telemetry data
-and syncing of the shadow state
-
-
-## Paho Python IoT Client
-
-This is a python client for the IoT platform. It uses the paho library for
-the mqtt communication. Certificates are used for authentication of the client.
-
-It demonstrates sending of telemetry messages via the aws IoT
-[basic ingest](https://docs.aws.amazon.com/en_pv/iot/latest/developerguide/iot-basic-ingest.html)
-and sync the
-[shadow state](https://docs.aws.amazon.com/en_pv/iot/latest/developerguide/iot-device-shadows.html)
-via [mqtt api calls](https://docs.aws.amazon.com/en_pv/iot/latest/developerguide/device-shadow-mqtt.html):
+1. git clone -b master https://gitlab.prinect-lounge.com/iot/iot-reference-client.git
+2. cd into iot-reference-client
+3. pipenv install
+4. set the environment variables for test or live environment. Utilize pipenv to do so: ```export
+ PIPENV_DOTENV_LOCATION=./env.test```
+5. run the demo: ```pipenv run python samples/run_telemetry_demo.py```   
 
 
 ### Setup
-
 The reference client is based on python 3.7 and [pipenv](https://pipenv-fork.readthedocs.io/en/latest/)
 as a virtual environment and dependency management tool.
 
@@ -31,27 +21,24 @@ as a virtual environment and dependency management tool.
     pipenv install
 
 ### Authentication
-Since v3 authentication is no longer handled by a api-key but with a bearer access token.
-The valid access token needs to assigned to the environment variable ``auth_token``. Please check the relevant
-env.* file. You can set the concrete value there. As a result the declaration should look like this : 
-``auth_token=aaaa.bbbb.cccc`` 
+The class Zaikio Manager will connect you with the directory and will utilize the "device auth flow" to
+establish a OAuth connection with the relevant provisioning service to provide a valid access token
 
 ### Run the demo   
-    
 Make sure to set environment variables before you start the demo.
-You will have a env.* file for each environment (dev, stg and prd)
+You will have a env.* file for each environment (test and live)
 We will use our virtual environment (pipenv) to set the environment variables.
 
 
 Mac / Linux user: 
 
     cd {PROJECT_ROOT} 
-    export PIPENV_DOTENV_LOCATION=./env.{prefered_environment*}  
+    export PIPENV_DOTENV_LOCATION=./env.test  
     
 Windows user: 
 
     cd {PROJECT_ROOT} 
-    set PIPENV_DOTENV_LOCATION=.\env.{prefered_environment*}  
+    set PIPENV_DOTENV_LOCATION=.\env.test  
 
 
 Then start the virtual environment with
@@ -59,14 +46,9 @@ Then start the virtual environment with
     pipenv shell
     
         
-*We recommend you to run the reference client against our stage (env.stg) environment 
-since the development environment is under heavy development
+*We recommend you to run the reference client against our stage (env.test) environment 
+since the development environment is under heavy development and you don't want to clutter your live environment 
 
-#### Verify the changes
-Open the debug monitoring tool: \
-    [Development](http://monitor.iot.dev.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
-    [Stage](http://monitor.iot.stage.heidelberg.cloud.s3-website-eu-west-1.amazonaws.com) \
-    [Production](https://monitor.iot.connectprint.cloud) 
 
 #### Telemetry demo
 
@@ -74,38 +56,54 @@ Send telemetry messages and sync the state by running:
 
     python ./src/run_telemetry_demo.py
 
-The monitoring tool will only show messages that have:
 
-    eventType='reference-client-test'
+Open the debug monitoring tool du verify your message: \
+    [Test environment](http://monitor.iot.stg.connectprint.cloud) \
+    [Live environment](https://monitor.iot.connectprint.cloud) 
+
+
 
 #### Further explanations
 
-##### Authentication
+##### Authentication store
 
-The connection is authenticated by certificates. The client verifies the
+The connection is secured by X.509 certificates (both ways). The client verifies the
 server by it's server certificate and the server authenticates the client by
 it's individual signed client certificate.
 
-If you run the demo for the first time the certificates will be downloaded and stored for you.
-Folder ```certificate_store``` in ```{PROJECT_ROOT}```. The next run the certs will be reused.
+
+**Please be aware that this process is only for demo purposes. You should store the data securely** 
+If you run the demo for the first time the certificates, keys and properties will be created, downloaded and stored
+ for you in the folder ```certificate_store``` in ```{PROJECT_ROOT}```. 
+On the next run the certs will be reused.
 Please be aware that for every provisioning call new assets will be created in the backend.
 
 The IoT Core certificate is signed by an Amazon Root Certificate and has to be
-present as "AmazonRootCA1.pem" and the client certificates have to exist as
-signed certificate and private key and have to have the same name as the thing
-or client.
+present as "AmazonRootCA1.pem".
 
 The ```certificate_store``` folder should have these files:
 
-- amazonRootCA1.pem -> Sever certificate (provided by the configuration service)
-- ClientID.txt -> text file with the client/thing ID (provided by the provisioning service)
-- OrgID.txt -> Your organisation ID (provided by the provisioning service)
-- deviceCert.cert -> Device certificate (provided by the provisioning service)
+Please be aware the files in the certificate_store are **environment depended**.
+
+- amazonRootCA1.pem -> Sever certificate (provided by the Onboarding Manager)
 - devicePrivateKey.pem -> Private Key of the device (created by the client itself)
-- devicePublicKey.pem -> Public Key of the device (created by the client itself)
+- deviceCert.pem -> Device Cert (provided by the Onboarding Manager)
+- properties.json -> json file with relevant properties (provided by the Onboarding Manager)
 
-One thing / device can only have one connection to the IoT Core at the same time.
+      {
+      "mqtt_endpoint": Iot mqtt endpoint,
+      "mqtt_port": standard IoT MQTT port,
+      "machine_region": machine region of IoT cloud,
+      "telemetry_topic": The mqtt telemetry topic,
+      "client_id": The name of your IoT device,
+      "org_id": Your organization id of the directory,
+      "machine_id": The generated machine id in the directory,
+      "site_id": The assigned site id of your machine provsioned in the directory
+      }
 
+
+
+One sender can only have one connection to the IoT Core at the same time.
 
 ### Unit Tests
 
@@ -123,140 +121,21 @@ or
 
 ### Architecture
 
-![paho_443 class diagram](iot_reference_client_class_diagram.png)
-
-The reference client shows the usage of telemetry messages and shadow updates.
-It consists for three classes:
-
-- Device: The device class has a state that, is synced by the
-ShadowHandler. The Device and the ShadowHandler use the IoTClient
-to connect to the MQTT Endpoint.
-- IotClient: The IoTClient takes care of the network connection. The connection
-is used to publish telemetry messages and exchange messages with the Shadow
-Service to sync the device state.
-- ShadowHandler: This class takes care of syncing the device state with
-the AWS Shadow Service. It uses the existing IoTClient to exchange MQTT
-messages with the shadow service topics.
-
+![Architectural Overview](iot_reference_client_class_diagram.png)
+Check comments in classes for further information
 
 #### Telemetry
-
-##### Reference client implementation of telementry messaging
-
-The reference client has a sample function Device#start_publishing for sending
-a couple of telemetry messages via the Device#publish_telementry function.
-
 ##### Topic
-
 The topic used for telemetry messages is
-"$aws/rules/iot_data_platform_telemetry_{env}"
-
-It's a basic ingest topic that only triggers the aws iot rule
-("iot_data_platform_telemetry_{env}"). Clients cannot subscribe to this topic.
-
-##### Message
-
-The payload of the messages is a json string. The json object has all header
-attributes on the top level and the payload as a nested json object as "payload"
-toplevel attribute. See the HDM Jira page for event header specification.
-
-Sample json object:
-
-    {
-    "payloadVersion": "1",
-    "assetType": "ID_Cutter",
-    "senderEventUuid": "ed7335bc-9cf8-49b0-8673-60497f1e54a6",
-    "senderType": "prinect",
-    "eventType": "ODA",
-    "eventSubtype": "InkConsumptionSummary",
-    "assetTimestamp": "2019-09-10T17:08:39+02:00",
-    "assetId": "AUTOTEST_CUT",
-    "senderId": "PTS-000047-130129-0751",
-    "senderTimestamp": "2019-09-10T17:08:39.557+02:00",
-    "connectionDeviceId": "LiveTestSimulator01",
-        "payload": {
-            "productiondataacquisition": {
-                "message": [{
-                    "inkconsumptionsummary": [{
-                        "jobid": "Integrationstest_1-1000_Auflage1_p0012",
-                        "inkconsumptions": [{
-                            "inkconsumption": [{
-                                "colorname": "SaphiraDigitalInkYellowPrimefire",
-                                "amount": "670.0184345245361"
-                            }],
-                            "inkuse": "GoodProduction"
-                        }],
-                        "workstepid": "r_190726_062245389_035886",
-                        "id": "0"
-                    }],
-                    "deviceid": "6000"
-                }]
-            }
-        }
-    }
+"$aws/rules/iot_data_platform_telemetry_{env}/{YOUR_ORD_ID}/{YOUR_CLIENT_ID}"
 
 #### Shadow Service
-
 Info: Currently the shadow functionality is not supported by the iot platform.
-
 ##### Reference Client implementation of shadow state sync
-
 The ShadowHandler implements updating the device state via the AWS
 Shadow Service. The ShadowHandler updates the device state as soon as the
 IoTClient connects the device successfully. It takes care of listening for
 updates (desired states) and publishing of state changes (reported states).
 
-##### Topics
-
-The Shadow Service uses a couple of MQTT topics to report the device state and
-request desired state changes. See the
-[AWS documentation](https://docs.aws.amazon.com/en_pv/iot/latest/developerguide/device-shadow-mqtt.html)
-for details.
-
-##### Messages
-
-State updates are communcated as json strings.
-
-The devices receives state updates as desired states:
-
-    {
-        "state": {
-            "desired": {
-                "event_publishing_enabled": true,
-                "event_type_blacklist": []
-            }
-        }
-    }
-
-The devices sens state updates as reported states:
-
-    {
-        "state": {
-            "reported": {
-                "event_publishing_enabled": true,
-                "event_type_blacklist": []
-            }
-        }
-    }
-
-
 ## Licenses
 Show [Licenses](licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
-
-##Changelog
-####15/01/2020
-Initial repository setup:
-- Refactor legacy reference-client
-- use pipenv as management and dependency tool
-- Enhance legacy reference client with provisioning use case
-####20/01/2020
-enable api version 2
-- Refactor reference client to api version 2
-- change provisioning of environment variables (os independent)
-####03/02/2020
-enable api version 3
-- Refactor reference client to api version 3
-- client creates keys and csr to receive a device certificate from the provisioning service
-- the certificate store has a new file called OrgId.txt where the orgId is stored
-- client sends telemetry data with additional sub topic information
-- Reprovisioning of your machine is necessary. Delete the certificate_store on your file system
