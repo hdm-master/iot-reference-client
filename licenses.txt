@@ -1,0 +1,16 @@
+ Name          Version     License
+ certifi       2019.11.28  MPL-2.0
+ cffi          1.13.2      MIT
+ chardet       3.0.4       LGPL
+ cryptography  2.8         BSD or Apache License, Version 2.0
+ entrypoints   0.3         UNKNOWN
+ flake8        3.7.9       MIT
+ idna          2.8         BSD-like
+ mccabe        0.6.1       Expat license
+ paho-mqtt     1.4.0       Eclipse Public License v1.0 / Eclipse Distribution License v1.0
+ pycodestyle   2.5.0       Expat license
+ pycparser     2.19        BSD
+ pyflakes      2.1.1       MIT
+ requests      2.22.0      Apache 2.0
+ six           1.14.0      MIT
+ urllib3       1.25.8      MIT
