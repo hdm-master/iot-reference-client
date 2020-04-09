@@ -5,7 +5,7 @@ Python based reference implementation to get started with the Heidelberg IoT pla
 Prerequisites: 
 - Zaikio User account for the test or live directory
 
-1. git clone -b master https://gitlab.prinect-lounge.com/iot/iot-reference-client.git
+1. git clone -b master https://github.com/hdm-master/iot-reference-client
 2. cd into iot-reference-client
 3. pipenv install
 4. set the environment variables for test or live environment. Utilize pipenv to do so: ```export
@@ -142,5 +142,4 @@ updates (desired states) and publishing of state changes (reported states).
 
 ## Licenses
 Show [Licenses](licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
-=======
 
