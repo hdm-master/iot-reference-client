@@ -1,3 +1,5 @@
+Python based reference implementation to get started with the Heidelberg IoT platform initially.
+
 # Quick Start
 Prerequisites: 
 - Zaikio User account for the test or live directory
