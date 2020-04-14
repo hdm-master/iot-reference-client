@@ -10,7 +10,7 @@ pipenv-setup = "*"
 mypy = "*"
 
 [packages]
-paho-mqtt = "==1.4.0"
+paho-mqtt = "*"
 requests = "*"
 cryptography = "*"
 jsonschema = "==3.2.0"

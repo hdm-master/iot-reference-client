@@ -1,16 +1,19 @@
-"""The Device Shadow is currently not in use"""
+from __future__ import annotations
 
 import json
+
 import logging
-from time import sleep
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .sender import Sender  # cyclic import problem
+from .iot_client import IoTClient
 
 logger = logging.getLogger(__name__)
 
 
 class ShadowCallbackHandler:
     """
-    CURRENTLY, NOT USED
-
     Handles all state updates between the device and iot core
 
     The handler keeps a reference to the iot iot_assets and the device.
@@ -19,41 +22,51 @@ class ShadowCallbackHandler:
     is published to the iot core via the iot iot_assets
     """
 
-    def __init__(self, iot_client, device):
+    def __init__(self, iot_client: IoTClient, sender: Sender):
         self.iot_client = iot_client
-        self.device = device
-        self.device.set_state = self.set_state_wrapper(self.device.set_state)
+        self.sender = sender
+        self.sender.set_state = self.set_state_wrapper(self.sender.set_state)
         self.iot_client.on_connect = self.on_connect_wrapper(
             self.iot_client.on_connect)
         self.iot_client.on_message = self.on_message_wrapper(
             self.iot_client.on_message)
+        self.iot_client.on_subscribe = self.on_subscribe_wrapper(
+            self.iot_client.on_subscribe)
 
     def set_state_wrapper(self, func):
         """ a wrapper that catches state updates on the device"""
-        logger.debug('set_state_wrapper invoked')
+        logger.info('set_state_wrapper invoked')
 
         def wrapper(new_state):
-            logger.debug('set_state wrapper function invoked')
+            logger.info('set_state wrapper function invoked')
             func(new_state)
-            self.publish_new_state(self.device.get_state())
+            self.publish_new_state(self.sender.get_state())
 
         return wrapper
 
     def on_connect_wrapper(self, func):
         """A wrapper that subscribes to the state update topics on connect"""
-        logger.debug('on_connect_wrapper invoked')
+        logger.info('on_connect_wrapper invoked')
 
         def wrapper(client, userdata, flags, result_code):
-            logger.debug('on_connect wrapper function invoked')
             func(client, userdata, flags, result_code)
-            self.subscribe_to_device_shadow_topics()
-            sleep(3)
-            self.request_desired_state()
+            if result_code == 0:
+                self.subscribe_to_device_shadow_topics()
 
+        return wrapper
+
+    def on_subscribe_wrapper(self, func):
+        """A wrapper that subscribes to the subscription updates topics on subscribe"""
+
+        def wrapper(client, userdata, mid, granted_qos):
+            func(client, userdata, mid, granted_qos)
+            if self.iot_client.connflag:
+                self.request_desired_state()
         return wrapper
 
     def on_message_wrapper(self, func):
         """A wrapper that listens for state updates for the device from iot core"""
+        logger.info('on_message_wrapper invoked')
 
         def wrapper(client, userdata, msg):
             func(client, userdata, msg)
@@ -63,10 +76,9 @@ class ShadowCallbackHandler:
 
     def request_desired_state(self):
         """This methods requests the current state from the iot core
-
         It publishes the a message to the relevant topic.
         """
-
+        logger.info('request_desired_state invoked')
         self.iot_client.publish(
             f"$aws/things/{self.get_thing_name()}/shadow/get",
             None)
@@ -81,6 +93,7 @@ class ShadowCallbackHandler:
         shadow_update_topics = [
             f"$aws/things/{self.get_thing_name()}/shadow/update/accepted",
             f"$aws/things/{self.get_thing_name()}/shadow/update/delta",
+            f"$aws/things/{self.get_thing_name()}/shadow/update/documents",
             f"$aws/things/{self.get_thing_name()}/shadow/get/accepted",
             f"$aws/things/{self.get_thing_name()}/shadow/get/rejected"
         ]
@@ -90,12 +103,10 @@ class ShadowCallbackHandler:
 
     def get_thing_name(self):
         """ proxy to the devices get_thing_name function """
-
-        return self.device.get_thing_name()
+        return self.sender.client_id
 
     def publish_new_state(self, new_state):
         """ this method publishes the new state to the relevant topic"""
-
         topic = f"$aws/things/{self.get_thing_name()}/shadow/update"
         update_document = {
             "state": {
@@ -109,6 +120,7 @@ class ShadowCallbackHandler:
 
         It calls the route function get the matching callback for the message
         """
+        logger.info(f'on message received: {msg}')
 
         callback = self.route(msg)
         if callback is not None:
@@ -124,7 +136,7 @@ class ShadowCallbackHandler:
 
         shadow_update_doc = json.loads(shadow_update_json)
         if "desired" in shadow_update_doc.get('state'):
-            self.device.set_state(
+            self.sender.set_state(
                 shadow_update_doc.get("state").get("desired")
             )
 
