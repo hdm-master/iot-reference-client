@@ -1,11 +1,9 @@
-
-Python based reference implementation to get started with the Heidelberg IoT platform initially.
-
 # Quick Start
 Prerequisites: 
 - Zaikio User account for the test or live directory
-
-1. git clone -b master https://github.com/hdm-master/iot-reference-client
+    - [Zaikio Test](https://directory.sandbox.zaikio.com)
+    - [Zaikio Live](https://directory.zaikio.com)
+1. git clone -b master https://github.com/hdm-master/iot-reference-client.git
 2. cd into iot-reference-client
 3. pipenv install
 4. set the environment variables for test or live environment. Utilize pipenv to do so: ```export
@@ -60,9 +58,9 @@ Send telemetry messages and sync the state by running:
     python ./src/run_telemetry_demo.py
 
 
-Open the debug monitoring tool du verify your message: \
-    [Test environment](http://monitor.iot.stg.connectprint.cloud) \
-    [Live environment](https://monitor.iot.connectprint.cloud) 
+Open the debug monitoring tool du verify your message:
+ - [Test environment](http://monitor.iot.stg.connectprint.cloud) 
+ - [Live environment](https://monitor.iot.connectprint.cloud) 
 
 
 
@@ -123,23 +121,52 @@ or
 
 
 ### Architecture
-
-![Architectural Overview](iot_reference_client_class_diagram.png)
-Check comments in classes for further information
-
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/hdm-master/iot-reference-client/master/docs/cd-iot_assets.puml)
 #### Telemetry
-##### Topic
-The topic used for telemetry messages is
-"$aws/rules/iot_data_platform_telemetry_{env}/{YOUR_ORD_ID}/{YOUR_CLIENT_ID}"
+There is a dedicated topic for telemetry data. You will get the topic name from the configuration service. 
+Check the following method: ```ProvisioningManager._fetch_configuration()``
+
+Additionally, you have to add your ord_id and your client_id to the topic structure
+
+eg. "{Telemetry_Topic_name}/{YOUR_ORD_ID}/{YOUR_CLIENT_ID}"
+check method ```Sender.publish_telemetry()``` for more details.
 
 #### Shadow Service
-Info: Currently the shadow functionality is not supported by the iot platform.
-##### Reference Client implementation of shadow state sync
-The ShadowHandler implements updating the device state via the AWS
-Shadow Service. The ShadowHandler updates the device state as soon as the
-IoTClient connects the device successfully. It takes care of listening for
-updates (desired states) and publishing of state changes (reported states).
+
+We are using the aws shadow service to synchronize device state and cloud state.
+Device Shadow is a persistent virtual ‘shadow’ of a Thing defined in AWS IoT Registry. 
+Basically, it’s a JSON State Document that is used to store and retrieve current state information for a thing. 
+You can interact with a Device Shadow using MQTT Topics or REST API calls. 
+The main advantage of Shadows is that you can interact with it, 
+regardless of whether the thing is connected to the Internet or not. 
+
+####Reference Client Implementation 
+
+![Ref Client State Handling](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/hdm-master/iot-reference-client/master/docs/sq-state-handling.puml)
+
+####Shadow sync flow
+
+Update topic creates a thing shadow if it doesn’t exist, 
+or updates the content of a thing shadow with the “desired” or “reported” state data provided in the request. 
+Messages are sent to all subscribers with the difference between “desired” or “reported” state (using delta topic).
+
+#####Links
+See the following aws documentation for further details:
+- https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-data-flow.html
+- https://iotbytes.wordpress.com/device-shadows-part-1-basics/
+
+####Thing State Object:
+
+######SendTelemetryData
+This attribute is set during provisioning by the provisioning service and indicates the senders "permission" to send 
+telemetry data. 
+Please check this state property **before** sending telemetry data.
+check method ```Sender.publish_telemetry()``` for more details.
+e.g.
+
+        {sendTelemetryData: True}
+
 
 ## Licenses
-Show [Licenses](licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
+Show ![Licenses](./docs/licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
 
