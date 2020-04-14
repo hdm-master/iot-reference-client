@@ -1,0 +1,42 @@
+@startuml
+skinparam ParticipantPadding 30
+skinparam BoxPadding 25
+header
+Authors: pw@zoi.de
+Version: 0.1
+endheader
+
+title Sequence Diagram: Internal state synchronization
+
+== client connection ==
+box "Internal Service" #LightGrey
+Sender->IoTClient:connect()
+IoTClient->ShadowCallback:on_conncet_wrapper()
+ShadowCallback->IoTClient:subscribe("AWS Shadow Topics")
+end box
+box "AWS Cloud" #LightGreen
+IoTClient->ShadowService:subscribe()
+IoTClient->ShadowCallback:on_subscribe_wrapper()
+activate ShadowCallback #FFBBBB
+ShadowCallback->ShadowCallback:request_desired_state()
+== state retrival ==
+IoTClient->ShadowService:publish("myClient/shadow/get")
+activate IoTClient #DarkSalmon
+deactivate IoTClient
+deactivate ShadowCallback
+ShadowService->IoTClient:on_message("myClient/shadow/get/accepted", state)
+IoTClient->ShadowCallback:on_message_wrapper(rawState)
+ShadowCallback->ShadowCallback:on_desired_state_change(rawState)
+== state synchronization ==
+ShadowCallback->Sender:set_state(desiredState)
+Sender->ShadowCallback:on_set_state_wrapper()
+activate ShadowCallback #FFBBBB
+ShadowCallback->ShadowCallback:publish_new_state()
+ShadowCallback->IoTClient:publish("myClient/shadow/update", reportedState)
+activate IoTClient #DarkSalmon
+IoTClient->ShadowService:publish("myClient/shadow/update", state)
+deactivate IoTClient
+deactivate ShadowCallback
+
+@enduml
+
