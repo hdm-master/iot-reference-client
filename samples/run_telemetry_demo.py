@@ -8,12 +8,12 @@ import json
 import logging
 import uuid
 from dataclasses import asdict
-
 from time import sleep
 
 import iot_messages.generic_signal_v2 as gen_sig_v2
 from event_validator.schema_validator import event_validator_factory, SchemaValidationException
 from iot_assets.asset import Asset, AssetDetails
+from iot_assets.iot_client import IoTClientDetails
 from iot_assets.sender import Sender, SenderDetails
 from onboarding.onboarding_manager import OnboardingManager, ConnectionDetails
 
@@ -24,53 +24,63 @@ logger = logging.getLogger(__name__)
 def simulate_telemetry_of_generic_signal_v2():
     """"
     This demo does the following:
-    1. Creates Onboard Manager to handle directory and provisioning tasks
+    1. Creates Onboarding Manager to handle directory and provisioning tasks
     2. Creates a sender with MQTT connection capabilities and an asset
-    3. Creates a device specific generic signal v2
+    3. Creates a asset which represents a machine you want to integrate
     4. Validates the generated message against the local json schema
     6. Sends the message to the telemetry topic if validation was successful
     """
     try:
         onboard_manager = OnboardingManager()
         connection_details = onboard_manager.onboard()
-        device, sender = generate_devices(connection_details)
-        device.connect(ssl_tunnel=False)  # set to True to use port 443
+        sender = generate_sender(connection_details)
+        asset = generate_asset(connection_details)
+        sender.connect(ssl_tunnel=False)  # set to True to use port 443
         event_validator = event_validator_factory()
-        for _ in range(3):
+        for _ in range(99):
             try:
-                sleep(1)
-                message = generate_generic_signal_v2(device, sender)
+                sleep(3)
+                message = generate_generic_signal_v2(asset, sender)
                 event_validator.validate(message)
-                device.publish_telemetry(message)
-                sleep(1)
+                sender.publish_telemetry(message)
+                sleep(3)
             except SchemaValidationException as err:
                 logger.error(err)
-        device.disconnect()
+        sender.disconnect()
     except Exception as err:
         logger.error(err)
         raise err
 
 
-def generate_devices(cd: ConnectionDetails) -> (Asset, Sender):
+def generate_sender(cd: ConnectionDetails) -> Sender:
     """
-    Returns asset and sender instance
+    Returns sender instance
     Input:
     cd : Connection Details which a provided by the onboarding manager
     Other details "strings" are demo values which should be changed accordingly
     """
 
-    sender_details = SenderDetails(cd.mqtt_endpoint, cd.standard_port, cd.device_cert_path,
-                                   cd.device_private_key_path, cd.amazon_root_ca_path, 'system',
-                                   'senderNameDemo', 'sendersoftwareversionDemo', cd.telemetry_topic, cd.org_id,
-                                   cd.site_id, cd.client_id)
+    iot_client_details = IoTClientDetails(cd.mqtt_endpoint, cd.standard_port, cd.device_cert_path,
+                                          cd.device_private_key_path, cd.amazon_root_ca_path, cd.client_id)
 
-    sender = Sender(sender_details)
+    sender_details = SenderDetails('system', 'senderNameDemo', 'sendersoftwareversionDemo', cd.org_id,
+                                   cd.site_id, cd.client_id, cd.telemetry_topic)
 
+    return Sender(sender_details, iot_client_details)
+
+
+def generate_asset(cd: ConnectionDetails) -> Asset:
+    """
+    Returns asset instance
+    Input:
+    cd : Connection Details (machine ID) which a provided by the onboarding manager
+    Other details "strings" are demo values which should be changed accordingly
+    """
     asset_details = AssetDetails(cd.machine_id, 'assetHardwareVersionDemo', 'assetmanufacturernameDemo',
                                  'assetnameDemo',
                                  'assetserialDemo', 'assetsoftwareversionDemo', 'BoxPacker', 'Speedmaster')
 
-    return Asset(asset_details, sender), sender
+    return Asset(asset_details)
 
 
 def generate_generic_signal_v2(asset: Asset, sender: Sender) -> str:

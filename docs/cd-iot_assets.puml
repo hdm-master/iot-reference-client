@@ -1,0 +1,115 @@
+@startuml
+
+header
+Authors: pw@zoi.de
+Version: 0.1
+endheader
+
+title Class Diagram: Overview of the Reference Client
+
+
+skinparam packageStyle rectangle
+hide members
+
+package iot_assets {
+
+
+
+class Asset {
+}
+note left: Represents an actual machine
+
+
+class Sender {
+}
+note left: Represents the IoT gateway
+
+
+class IoTClient {
+}
+note top of IoTClient
+Stateless Iot Client handles
+mqtt connections
+end note
+
+class ShadowCallbackHandler {
+}
+note bottom: Syncs the local (reported) Sender \nstate with Shadow (desired) state in the cloud
+
+
+}
+
+
+Asset "n" --* "1" Sender
+Sender "1" o-- "1" ShadowCallbackHandler
+Sender "1" o-- "1" IoTClient
+ShadowCallbackHandler "1" --o "1" IoTClient
+
+
+package event_validator {
+class SchemaValidator {
+}
+note top of SchemaValidator
+Validates the given message against
+the local json schema
+end note
+
+}
+
+package onboarding{
+class CredentialsManager {
+}
+note top of CredentialsManager
+handles key and csr creation
+end note
+
+class OnboardingManager {
+}
+
+note top of OnboardingManager
+wrapper around credentials, provisioning and zaikio manager
+end note
+
+class ProvisioningManager {
+}
+
+note top of ProvisioningManager
+handles rest calls to the provisioning service
+end note
+
+class ZaikioManager {
+}
+
+note bottom of ZaikioManager
+handles rest calls to the zaikio directory
+end note
+}
+
+OnboardingManager *-- ProvisioningManager : contains
+OnboardingManager *-- CredentialsManager : contains
+OnboardingManager *-- ZaikioManager : contains
+
+package iot_messages {
+class GenericSignalV2 {
+}
+
+note top of GenericSignalV2
+python objects to construct
+the generic message v2
+end note
+
+}
+
+package demos {
+
+}
+note top of demos: Collection of scripts, demonstrating IoT use cases
+
+demos +-- iot_messages
+demos +-- event_validator
+demos +-- onboarding
+demos +-- iot_assets
+
+
+@enduml
+
