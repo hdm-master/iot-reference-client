@@ -126,9 +126,9 @@ or
 There is a dedicated topic for telemetry data. You will get the topic name from the configuration service. 
 Check the following method: ```ProvisioningManager._fetch_configuration()```
 
-Additionally, you have to add your ord_id and your client_id to the topic structure
+Additionally, you have to add your org_id and your client_id to the topic structure (you will find them in the properties.json)
 
-eg. "{Telemetry_Topic_name}/{YOUR_ORD_ID}/{YOUR_CLIENT_ID}"
+eg. "{Telemetry_Topic_Name}/{YOUR_ORG_ID}/{YOUR_CLIENT_ID}"
 check method ```Sender.publish_telemetry()``` for more details.
 
 #### Shadow Service
