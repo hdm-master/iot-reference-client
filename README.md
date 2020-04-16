@@ -55,7 +55,7 @@ since the development environment is under heavy development and you don't want 
 
 Send telemetry messages and sync the state by running:
 
-    python ./src/run_telemetry_demo.py
+    python ./samples/run_telemetry_demo.py
 
 
 Open the debug monitoring tool du verify your message:
