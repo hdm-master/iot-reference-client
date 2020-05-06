@@ -55,7 +55,7 @@ class GenericSignalPayload:
 
 
 @dataclass
-class HeaderV2Mandatory:
+class HeaderV3Mandatory:
     assetid: str  # from device
     assetserial: str  # from device, created in the onbaording process
     assettimestamp: str  # from message
@@ -69,7 +69,7 @@ class HeaderV2Mandatory:
 
 
 @dataclass
-class HeaderOptional:
+class HeaderV3Optional:
     assethardwareversion: Optional[str] = None  # from asset
     assetmanufacturername: Optional[str] = None  # from asset, created in the onbaording process
     assetname: Optional[str] = None  # from asset, created in the onbaording process
@@ -88,10 +88,10 @@ class HeaderStatic:
 
 
 @dataclass
-class GenericHeaderV2Mandatory(HeaderV2Mandatory):
+class GenericHeaderMandatory(HeaderV3Mandatory):
     payload: GenericSignalPayload
 
 
 @dataclass
-class GenericSignalV2(HeaderStatic, HeaderOptional, GenericHeaderV2Mandatory):
+class GenericSignalV2(HeaderStatic, HeaderV3Optional, GenericHeaderMandatory):
     pass
