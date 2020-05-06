@@ -1,8 +1,8 @@
 import json
 import logging
+from typing import Dict
 
 import requests
-from typing import Dict
 
 logger = logging.getLogger(__name__)
 
@@ -10,10 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class ProvisioningManager:
-    def __init__(self, base_url: str, token: str, csr: str):
+    def __init__(self, base_url: str, token: str, csr: str, site_id: str):
         self.base_url = base_url
         self.auth_token = token
         self.csr = csr
+        self.site_id = site_id
 
     def provision_new_device(self) -> Dict:
         """Provisions a new device/client in provisioning service"""
@@ -51,7 +52,7 @@ class ProvisioningManager:
     def _fetch_provisioning(self) -> Dict:
         """call the provisioning API"""
         logger.info('Starting provisioning...')
-        provisioning_url = f'{self.base_url}/v3/provisioning'
+        provisioning_url = f'{self.base_url}/v4/provisioning'
         response = requests.post(provisioning_url, headers=self._provide_header(), data=self._build_provisioning_body())
         if response.status_code == 200:
             content = response.json()
@@ -69,4 +70,5 @@ class ProvisioningManager:
 
     def _build_provisioning_body(self):
         """Provide body payload for provisioning request"""
-        return json.dumps({"certificateSigningRequest": self.csr})
+        body = {"certificateSigningRequest": self.csr, "siteId": self.site_id}
+        return json.dumps(body)

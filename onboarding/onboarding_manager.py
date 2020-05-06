@@ -50,7 +50,7 @@ class OnboardingManager:
             csr_properties = cm.create_csr()
             cm.add_file_to_certificate_store(self.device_private_key_path, csr_properties['private_key'])
 
-            pm = ProvisioningManager(base_url, token, csr_properties['csr'])
+            pm = ProvisioningManager(base_url, token, csr_properties['csr'], onboarding_details['site_id'])
             provisioning_properties = pm.provision_new_device()
             cm.add_file_to_certificate_store(self.device_cert_path, provisioning_properties['device_cert'])
             cm.add_file_to_certificate_store(self.amazon_root_ca_path, provisioning_properties['server_root_ca'])
