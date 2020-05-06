@@ -80,7 +80,8 @@ def generate_asset(cd: ConnectionDetails) -> Asset:
     """
     asset_details = AssetDetails(cd.machine_id, 'assetHardwareVersionDemo', 'assetmanufacturernameDemo',
                                  'assetnameDemo',
-                                 'assetserialDemo', 'assetsoftwareversionDemo', 'BoxPacker', 'Speedmaster')
+                                 'assetserialDemo', 'assetsoftwareversionDemo', 'BoxPacker', 'Speedmaster',
+                                 cd.site_id, 'siteNameOfDirectory')
 
     return Asset(asset_details)
 
@@ -120,7 +121,8 @@ def generate_generic_signal_v2(asset: Asset, sender: Sender) -> str:
                                                  sender.sendertype, ts_s, genericSignalPayload,
                                                  asset.assethardwareversion, asset.assetmanufacturername,
                                                  asset.assetname, asset.assetsoftwareversion, asset.assetsubtype,
-                                                 sender.sendername, sender.sendersoftwareversion)
+                                                 sender.sendername, sender.sendersoftwareversion,asset.siteid,
+                                                 asset.sitename)
     d = asdict(genericSignalV2)
     return json.dumps(d)
 

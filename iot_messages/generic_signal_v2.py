@@ -69,19 +69,21 @@ class HeaderV2Mandatory:
 
 
 @dataclass
-class HeaderV2Optional:
-    assethardwareversion: Optional[str] = None  # from device
-    assetmanufacturername: Optional[str] = None  # from device, created in the onbaording process
-    assetname: Optional[str] = None  # from device, created in the onbaording process
-    assetsoftwareversion: Optional[str] = None  # from device
-    assetsubtype: Optional[str] = None  # from device
-    sendername: Optional[str] = None  # from device
-    sendersoftwareversion: Optional[str] = None  # from device
+class HeaderOptional:
+    assethardwareversion: Optional[str] = None  # from asset
+    assetmanufacturername: Optional[str] = None  # from asset, created in the onbaording process
+    assetname: Optional[str] = None  # from asset, created in the onbaording process
+    assetsoftwareversion: Optional[str] = None  # from asset
+    assetsubtype: Optional[str] = None  # from asset
+    sendername: Optional[str] = None  # from asset
+    sendersoftwareversion: Optional[str] = None  # from asset
+    siteid: Optional[str] = None  # from asset, created in zaikio
+    sitename: Optional[str] = None  # from asset, created in zaikio
 
 
 @dataclass
-class HeaderV2Static:
-    headerversion: int = 2  # from message
+class HeaderStatic:
+    headerversion: int = 3  # from message
     payloadversion: int = 2  # from message
 
 
@@ -91,5 +93,5 @@ class GenericHeaderV2Mandatory(HeaderV2Mandatory):
 
 
 @dataclass
-class GenericSignalV2(HeaderV2Static, HeaderV2Optional, GenericHeaderV2Mandatory):
+class GenericSignalV2(HeaderStatic, HeaderOptional, GenericHeaderV2Mandatory):
     pass

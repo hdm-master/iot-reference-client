@@ -20,6 +20,8 @@ class AssetDetails:
     assetsoftwareversion: str
     assettype: str
     assetsubtype: str
+    siteid: str = None
+    sitename: str = None
 
 
 class Asset:
@@ -34,4 +36,6 @@ class Asset:
         self.assetsoftwareversion = asset.assetsoftwareversion
         self.assettype = asset.assettype
         self.assetsubtype = asset.assetsubtype
+        self.siteid = asset.siteid
+        self.sitename = asset.sitename
 
