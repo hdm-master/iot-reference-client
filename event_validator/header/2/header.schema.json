@@ -24,8 +24,7 @@
                                     "description":"Software version of the asset, e.g. Prinect software version."
         },
         "assetsubtype":{    "type": "string",
-                            "description": "Model information to detail the given device class (see @assettype).",
-                            "enum": ["Speedmaster", "Primefire", "Labelfire", "Stahlfolder", "Prinect", ""]        
+                            "description": "Model information to detail the given device class (see @assettype), e.g. (Heidelberg related) 'Speedmaster', 'Primefire', 'Labelfire', 'Stahlfolder', 'Prinect'"                             
         },
         "assettimestamp":{  "type": "string",
                              "format": "date-time",
@@ -45,7 +44,7 @@
         },
         "headerversion":{   "type": "integer",
                             "enum": [2],
-                            "description": "This relates to the current header schema / definition, must be set 1 if the message complies this schema version."
+                            "description": "This relates to the current header schema / definition, must be set to 2 if the message complies this schema version."
         },
         "sendertype":{      "type": "string",
                             "enum": ["prinect", "system", "press", "ctp", "postpress"],
