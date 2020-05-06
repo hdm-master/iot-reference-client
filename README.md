@@ -124,11 +124,11 @@ or
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/hdm-master/iot-reference-client/master/docs/cd-iot_assets.puml)
 #### Telemetry
 There is a dedicated topic for telemetry data. You will get the topic name from the configuration service. 
-Check the following method: ```ProvisioningManager._fetch_configuration()``
+Check the following method: ```ProvisioningManager._fetch_configuration()```
 
-Additionally, you have to add your ord_id and your client_id to the topic structure
+Additionally, you have to add your org_id and your client_id to the topic structure (you will find them in the properties.json)
 
-eg. "{Telemetry_Topic_name}/{YOUR_ORD_ID}/{YOUR_CLIENT_ID}"
+eg. "{Telemetry_Topic_Name}/{YOUR_ORG_ID}/{YOUR_CLIENT_ID}"
 check method ```Sender.publish_telemetry()``` for more details.
 
 #### Shadow Service
@@ -140,24 +140,24 @@ You can interact with a Device Shadow using MQTT Topics or REST API calls.
 The main advantage of Shadows is that you can interact with it, 
 regardless of whether the thing is connected to the Internet or not. 
 
-####Reference Client Implementation 
+#### Reference Client Implementation 
 
 ![Ref Client State Handling](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/hdm-master/iot-reference-client/master/docs/sq-state-handling.puml)
 
-####Shadow sync flow
+#### Shadow sync flow
 
 Update topic creates a thing shadow if it doesn’t exist, 
 or updates the content of a thing shadow with the “desired” or “reported” state data provided in the request. 
 Messages are sent to all subscribers with the difference between “desired” or “reported” state (using delta topic).
 
-#####Links
+##### Links
 See the following aws documentation for further details:
 - https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-data-flow.html
 - https://iotbytes.wordpress.com/device-shadows-part-1-basics/
 
-####Thing State Object:
+#### Thing State Object:
 
-######SendTelemetryData
+###### SendTelemetryData
 This attribute is set during provisioning by the provisioning service and indicates the senders "permission" to send 
 telemetry data. 
 Please check this state property **before** sending telemetry data.
@@ -168,5 +168,5 @@ e.g.
 
 
 ## Licenses
-Show ![Licenses](./docs/licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
+Show [Licenses](./docs/licenses.txt) or generate them with the command ``pip-licenses`` in the pipenv environment
 
