@@ -100,15 +100,15 @@ end note
 
 }
 
-package demos {
+package samples {
 
 }
-note top of demos: Collection of scripts, demonstrating IoT use cases
+note top of samples: Collection of scripts, demonstrating IoT use cases
 
-demos +-- iot_messages
-demos +-- event_validator
-demos +-- onboarding
-demos +-- iot_assets
+samples +-- iot_messages
+samples +-- event_validator
+samples +-- onboarding
+samples +-- iot_assets
 
 
 @enduml
