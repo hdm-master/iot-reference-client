@@ -1,10 +1,10 @@
-from dataclasses import dataclass, field
-
 import logging
+from dataclasses import dataclass, field
 from typing import Dict
 
 from .iot_client import IoTClient, IoTClientDetails
 from .shadow_callback_handler import ShadowCallbackHandler
+from .telemetry_callback_handler import TelemetryCallbackHandler
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,9 @@ class Sender:
     This class handles the connectivity to the IoT Client and the ShadowCallbackHandler
     It represents your IoT gateway
     """
-    def __init__(self, sender_options: SenderDetails, iot_client_options: IoTClientDetails):
+
+    def __init__(self, sender_options: SenderDetails, iot_client_options: IoTClientDetails,
+                 with_telemetry_response: bool = False):
         self.iot_client = IoTClient(iot_client_options)
         self.org_id = sender_options.org_id
         self.site_id = sender_options.site_id
@@ -37,6 +39,8 @@ class Sender:
         self.telemetry_topic = sender_options.telemetry_topic
         self.state = sender_options.state
         self.shadow_callback_handler = ShadowCallbackHandler(self.iot_client, self)
+        if with_telemetry_response:
+            self.telemetry_callback_handler = TelemetryCallbackHandler(self.iot_client, self)
 
     def connect(self, ssl_tunnel=False):
         """Setup the mqtt connection to use standard port"""

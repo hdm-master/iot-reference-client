@@ -35,7 +35,6 @@ class ShadowCallbackHandler:
 
     def set_state_wrapper(self, func):
         """ a wrapper that catches state updates on the device"""
-        logger.info('set_state_wrapper invoked')
 
         def wrapper(new_state):
             logger.info('set_state wrapper function invoked')
@@ -46,7 +45,6 @@ class ShadowCallbackHandler:
 
     def on_connect_wrapper(self, func):
         """A wrapper that subscribes to the state update topics on connect"""
-        logger.info('on_connect_wrapper invoked')
 
         def wrapper(client, userdata, flags, result_code):
             func(client, userdata, flags, result_code)
@@ -66,7 +64,6 @@ class ShadowCallbackHandler:
 
     def on_message_wrapper(self, func):
         """A wrapper that listens for state updates for the device from iot core"""
-        logger.info('on_message_wrapper invoked')
 
         def wrapper(client, userdata, msg):
             func(client, userdata, msg)
@@ -78,7 +75,6 @@ class ShadowCallbackHandler:
         """This methods requests the current state from the iot core
         It publishes the a message to the relevant topic.
         """
-        logger.info('request_desired_state invoked')
         self.iot_client.publish(
             f"$aws/things/{self.get_thing_name()}/shadow/get",
             None)
@@ -120,8 +116,6 @@ class ShadowCallbackHandler:
 
         It calls the route function get the matching callback for the message
         """
-        logger.info(f'on message received: {msg}')
-
         callback = self.route(msg)
         if callback is not None:
             callback(msg.payload)

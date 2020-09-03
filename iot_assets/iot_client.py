@@ -77,7 +77,6 @@ class IoTClient:
     def publish(self, topic, message):
         """publishes a message via the mqtt iot_assets"""
         logger.info('Publishing to topic: %s' % topic)
-        logger.info('Message: %s' % message)
         self.mqttc.publish(topic, message, qos=1)
 
     def subscribe(self, topic):
@@ -95,7 +94,6 @@ class IoTClient:
         logger.info('Result is: %i' % result_code)
 
     def on_message(self, client, userdata, message):
-        logger.info(f'message received: {message}')
         """On message callback handler"""
 
     def on_disconnect(self, client, userdata, result_code):
